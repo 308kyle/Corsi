@@ -1,4 +1,4 @@
-package com.example.corsi
+package com.example.myapplication
 
 import org.junit.Test
 
