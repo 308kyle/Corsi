@@ -3,6 +3,7 @@ package com.example.myapplication
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -11,6 +12,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import java.util.*
+import kotlin.concurrent.timerTask
 
 class GamePage: AppCompatActivity(), View.OnClickListener {
 
@@ -22,9 +24,19 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     var running: Boolean = false
     var round: Int = 0
     var count: Int = 0
-
+    var duration: Long = 0
+    var startTime:Long = 0
     val mHandler: Handler = Handler(Looper.getMainLooper())
 
+    //updates the ingame timer
+    val timer = object: CountDownTimer(TIMER_REFRESH, TIMER_INTERVAL) {
+        override fun onTick(millisUntilFinished: Long) {
+            duration = System.currentTimeMillis() - startTime
+            time.setText(duration.toString())
+        }
+        override fun onFinish() {
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +44,9 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
 
         //init the round and time fields, should update them as the game goes, but idk
         //better figure out how to track time in kotlin
+
+        rounds = findViewById(R.id.rounds)
+        time = findViewById(R.id.time)
 
         buttons = listOf(
             findViewById(R.id.one),
@@ -50,9 +65,6 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
 
         }
 
-        rounds = findViewById(R.id.rounds)
-        time = findViewById(R.id.time)
-
 //      all the on click listeners for the buttons are below (theres a lose function at the bottom)
 //      in case it isnt obvious these listeners refer to these buttons
 //              |     |
@@ -67,6 +79,11 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
 
         // maybe add button to start game?
         // starting game
+        startTime = System.currentTimeMillis()
+        var eventTimer = Timer()
+        eventTimer.schedule(timerTask {
+            timerStarter(timer)
+        }, 0, TIMER_REFRESH)
         playSequence()
         round++
     }
@@ -138,8 +155,23 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         startActivity(intent)
     }
 
-    companion object {
-        private const val TAG = "Corsi-Tapping"
+    //corrects inaccuracies in the duration variable and starts the timer
+    fun timerStarter(t: CountDownTimer){
+        //duration = System.currentTimeMillis() - startTime
+        t.cancel()
+        t.start()
+    }
+    fun timeConvert(milli: Long){
+        if (milli >= 3600000){
+           // var out =
+        }
+
+        //return out
     }
 
+    companion object {
+        private const val TAG = "Corsi-Tapping"
+        private val TIMER_REFRESH: Long = 5000
+        private val TIMER_INTERVAL: Long = 500
+    }
 }
