@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -149,8 +150,9 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         return r.nextInt(buttons.size)
     }
 
-    fun lose(){
-        //will jump to the loss screen, not really there yet but just call this and ill update this function later
+    private fun lose(){
+        val intent = Intent(this,LoseScreen::class.java)
+        startActivity(intent)
     }
 
     //corrects inaccuracies in the duration variable and starts the timer
