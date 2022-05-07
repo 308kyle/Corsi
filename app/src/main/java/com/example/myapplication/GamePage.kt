@@ -17,8 +17,11 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     lateinit var time: TextView
     private val sequence: MutableList<Int> = ArrayList()
     private lateinit var buttons: List<Button>
+    var playerTurn: Boolean = false
     var running: Boolean = false
-    
+    var round: Int = 0
+    var count: Int = 0
+
     val mHandler: Handler = Handler(Looper.getMainLooper())
 
 
@@ -61,33 +64,67 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
 //           7  |  8  |  9
 //              |     |
 
+        // maybe add button to start game?
+        // starting game
+        playSequence()
+        round++
     }
 
     override fun onClick(v: View?) {
-        playSequence()
-        //TODO
+
+        // locks the user out of clicking during the playback
+        if (!playerTurn || running) {
+            return
+        }
+        val index: Int = v!!.tag as Int
+
+        Log.i(TAG, "count: $count round: $round")
+        Log.i(TAG, "" + sequence[count] + " " + index)
+
+
+        // correct
+        if (sequence[count] == index) {
+            buttons[index].setBackgroundColor(Color.YELLOW)
+            mHandler.postDelayed({
+                buttons[index].setBackgroundColor(Color.BLUE)
+            }, 200)
+            count++
+            if (count == round) {
+                // next round
+                round++
+                count = 0
+                playSequence()
+            }
+        } else {
+            // game over
+            // temp code
+            buttons[index].setBackgroundColor(Color.RED)
+            playerTurn = false
+            lose()
+        }
+        Log.i(TAG, playerTurn.toString())
     }
 
     private fun playSequence() {
-        if (!running) {
-            // locks the user out of clicking
-            running = true
+        Log.i(TAG, "new sequence")
+        running = true
+        mHandler.postDelayed({
+            playerTurn = true
+            running = false
+        }, (800 * (sequence.size + 2)).toLong())
+
+        sequence.add(randomButton())
+
+        for (i in 0 until sequence.size) {
             mHandler.postDelayed({
-                running = false
-            }, (1000 * sequence.size + 1000).toLong())
+                buttons[sequence[i]].setBackgroundColor(Color.YELLOW)
+            }, (800 * (i+1)).toLong())
 
-            sequence.add(randomButton())
-
-            for (i in 0 until sequence.size) {
-                mHandler.postDelayed({
-                    buttons[sequence[i]].setBackgroundColor(Color.YELLOW)
-                }, (1000 * i).toLong())
-
-                mHandler.postDelayed({
-                    buttons[sequence[i]].setBackgroundColor(Color.BLUE)
-                }, (1000 * i + 1000).toLong())
-            }
+            mHandler.postDelayed({
+                buttons[sequence[i]].setBackgroundColor(Color.BLUE)
+            }, (800 * (i+2)).toLong())
         }
+        Log.i(TAG, playerTurn.toString())
     }
 
     private fun randomButton() : Int {
