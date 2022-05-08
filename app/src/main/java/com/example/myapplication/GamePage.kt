@@ -149,7 +149,6 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
             }
         } else if (lives > 0) {
             // lost a life
-            Toast.makeText(this, "You lost a life! One chance remaining", Toast.LENGTH_SHORT).show()
             loseAnimation()
             buttons[index].setBackgroundColor(Color.RED)
             mHandler.postDelayed({
