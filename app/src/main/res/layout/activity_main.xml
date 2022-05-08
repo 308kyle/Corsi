@@ -18,8 +18,8 @@
 
     <TextView
         android:id="@+id/textView3"
-        android:layout_width="277dp"
-        android:layout_height="116dp"
+        android:layout_width="279dp"
+        android:layout_height="119dp"
         android:layout_marginTop="68dp"
         android:text="Press the buttons in the order they flash yellow. Every round adds one extra block to memeorize. If you make a mistake, you are able to redo the current round one time."
         app:layout_constraintEnd_toEndOf="parent"
@@ -29,9 +29,9 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="137dp"
-        android:layout_height="78dp"
-        android:layout_marginTop="512dp"
+        android:layout_width="108dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="468dp"
         android:text="PLAY"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
