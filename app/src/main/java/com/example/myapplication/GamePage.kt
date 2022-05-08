@@ -32,7 +32,7 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     val timer = object: CountDownTimer(TIMER_REFRESH, TIMER_INTERVAL) {
         override fun onTick(millisUntilFinished: Long) {
             duration = System.currentTimeMillis() - startTime
-            time.setText(duration.toString())
+            time.setText(timeConvert(duration))
         }
         override fun onFinish() {
         }
@@ -161,17 +161,39 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         t.cancel()
         t.start()
     }
-    fun timeConvert(milli: Long){
+
+    fun timeConvert(milli: Long): String {
+        var out = ""
         if (milli >= 3600000){
-           // var out =
+            val hours = milli / 1000 / 60 / 60
+            val minutes = milli / 1000 / 60 % 60
+            val seconds = milli / 1000 % 60 % 60
+            out = timeFormat(hours) + ":"+ timeFormat(minutes) + ":" + timeFormat(seconds)
+        }
+        else if (milli >= 60000){
+            val minutes = milli / 1000 / 60
+            val seconds = milli / 1000 % 60
+            out = timeFormat(minutes) + ":" + timeFormat(seconds)
+        }
+        else{
+            val seconds = milli / 1000 % 60
+            out = "00:" + timeFormat(seconds)
         }
 
-        //return out
+        return out
     }
 
+    fun timeFormat(t: Long): String{
+        if (t<10){
+            return "0$t"
+        }
+        else{
+            return "$t"
+        }
+    }
     companion object {
         private const val TAG = "Corsi-Tapping"
         private val TIMER_REFRESH: Long = 5000
-        private val TIMER_INTERVAL: Long = 500
+        private val TIMER_INTERVAL: Long = 100
     }
 }
