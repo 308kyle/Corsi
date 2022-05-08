@@ -24,9 +24,10 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     var running: Boolean = false
     var round: Int = 0
     var count: Int = 0
+    var lives: Int = 0
     var duration: Long = 0
     var startTime:Long = 0
-    val mHandler: Handler = Handler(Looper.getMainLooper())
+    private val mHandler: Handler = Handler(Looper.getMainLooper())
 
     //updates the ingame timer
     val timer = object: CountDownTimer(TIMER_REFRESH, TIMER_INTERVAL) {
@@ -84,6 +85,8 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         eventTimer.schedule(timerTask {
             timerStarter(timer)
         }, 0, TIMER_REFRESH)
+
+        sequence.add(randomButton())
         playSequence()
         round++
     }
@@ -99,7 +102,6 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         Log.i(TAG, "count: $count round: $round")
         Log.i(TAG, "" + sequence[count] + " " + index)
 
-
         // correct
         if (sequence[count] == index) {
             buttons[index].setBackgroundColor(Color.YELLOW)
@@ -111,8 +113,20 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
                 // next round
                 round++
                 count = 0
+                lives = 1
+                sequence.add(randomNoDoubles())
                 playSequence()
+
             }
+        } else if (lives > 0) {
+            // lost a life
+            buttons[index].setBackgroundColor(Color.RED)
+            mHandler.postDelayed({
+                buttons[index].setBackgroundColor(Color.BLUE)
+            }, 200)
+            count = 0
+            lives--
+            playSequence()
         } else {
             // game over
             // temp code
@@ -129,9 +143,7 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         mHandler.postDelayed({
             playerTurn = true
             running = false
-        }, (800 * (sequence.size + 2)).toLong())
-
-        sequence.add(randomButton())
+        }, (800 * (sequence.size + 1)).toLong())
 
         for (i in 0 until sequence.size) {
             mHandler.postDelayed({
@@ -145,9 +157,22 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         Log.i(TAG, playerTurn.toString())
     }
 
+
+
     private fun randomButton() : Int {
         val r = Random()
         return r.nextInt(buttons.size)
+    }
+
+    private fun randomNoDoubles() : Int {
+        val r = Random()
+        var rand = r.nextInt(buttons.size - 1)
+        if (sequence[sequence.size - 1] > rand) {
+            return rand
+        } else {
+            rand++
+        }
+        return rand
     }
 
     private fun lose(){
@@ -156,7 +181,7 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     }
 
     //corrects inaccuracies in the duration variable and starts the timer
-    fun timerStarter(t: CountDownTimer){
+    private fun timerStarter(t: CountDownTimer){
         //duration = System.currentTimeMillis() - startTime
         t.cancel()
         t.start()
