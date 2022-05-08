@@ -33,6 +33,7 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     private var round: Int = 0
     private var count: Int = 0
     private var lives: Int = 1
+
     var duration: Long = 0
     var startTime: Long = 0
     private val mHandler: Handler = Handler(Looper.getMainLooper())
@@ -51,7 +52,7 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     private val timer = object: CountDownTimer(TIMER_REFRESH, TIMER_INTERVAL) {
         override fun onTick(millisUntilFinished: Long) {
             duration = System.currentTimeMillis() - startTime
-            time.setText(duration.toString())
+            time.setText(timeConvert(duration))
         }
         override fun onFinish() {
         }
@@ -144,7 +145,6 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
                 lives = 1
                 sequence.add(randomNoDoubles())
                 playSequence()
-
             }
         } else if (lives > 0) {
             // lost a life
@@ -178,11 +178,11 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         for (i in 0 until sequence.size) {
             mHandler.postDelayed({
                 buttons[sequence[i]].setBackgroundColor(Color.YELLOW)
-            }, (800 * (i+1)).toLong())
+            }, (800 * (i + 1)).toLong())
 
             mHandler.postDelayed({
                 buttons[sequence[i]].setBackgroundColor(Color.BLUE)
-            }, (800 * (i+2)).toLong())
+            }, (800 * (i + 2)).toLong())
         }
         Log.i(TAG, playerTurn.toString())
     }
@@ -205,6 +205,16 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         return rand
     }
 
+    private fun wAnimation() {
+        mConstraintLayout.background = mTransition2
+        mTransition2.startTransition(500)
+    }
+
+    private fun lAnimation() {
+        mConstraintLayout.background = mTransition1
+        mTransition1.startTransition(500)
+    }
+
     private fun lose(){
         save()
         val intent = Intent(this,LoseScreen::class.java)
@@ -219,13 +229,35 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         t.start()
     }
 
-    fun timeConvert(milli: Long){
+    fun timeConvert(milli: Long): String {
+        var out = ""
         if (milli >= 3600000){
-           // var out =
+            val hours = milli / 1000 / 60 / 60
+            val minutes = milli / 1000 / 60 % 60
+            val seconds = milli / 1000 % 60 % 60
+            out = timeFormat(hours) + ":"+ timeFormat(minutes) + ":" + timeFormat(seconds)
+        }
+        else if (milli >= 60000){
+            val minutes = milli / 1000 / 60
+            val seconds = milli / 1000 % 60
+            out = timeFormat(minutes) + ":" + timeFormat(seconds)
+        }
+        else{
+            val seconds = milli / 1000 % 60
+            out = "00:" + timeFormat(seconds)
         }
         //return out
     }
 
+    fun timeFormat(t: Long): String{
+        if (t<10){
+            return "0$t"
+        }
+        else{
+            return "$t"
+        }
+    }
+    
     fun save() {
         mSharedP = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
         val savedScore = mSharedP.getInt(NAME, 0)
@@ -249,14 +281,16 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
 
 //    fun get() {
 //        mSharedP = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
-//        name.text = sharedpreferences.getString(NAME, "")
+//        name.text = mSharedP.getString(NAME, "")
 //    }
 
     companion object {
         private const val TAG = "Corsi-Tapping"
         private const val TIMER_REFRESH: Long = 5000
-        private const val TIMER_INTERVAL: Long = 500
+        private const val TIMER_INTERVAL: Long = 100
         private const val PREF_NAME: String = "my_pref"
         private const val NAME: String = "name_key"
+
     }
 }
+
