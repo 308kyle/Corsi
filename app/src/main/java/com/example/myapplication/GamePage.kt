@@ -230,7 +230,6 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     }
 
     fun timeConvert(milli: Long): String {
-        var out = ""
         if (milli >= 3600000){
             val hours = milli / 1000 / 60 / 60
             val minutes = milli / 1000 / 60 % 60
@@ -246,7 +245,7 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
             val seconds = milli / 1000 % 60
             out = "00:" + timeFormat(seconds)
         }
-        //return out
+        return out
     }
 
     fun timeFormat(t: Long): String{
