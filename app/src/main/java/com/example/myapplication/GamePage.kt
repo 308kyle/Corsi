@@ -217,10 +217,13 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     }
 
     private fun lose(){
+        timer.cancel()
         save()
         val intent = Intent(this,LoseScreen::class.java)
         intent.putExtra("score", round)
+        intent.putExtra("timer", timeConvert(duration))
         startActivity(intent)
+
     }
 
     //corrects inaccuracies in the duration variable and starts the timer
