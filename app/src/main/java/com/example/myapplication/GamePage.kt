@@ -16,6 +16,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 
@@ -148,6 +149,7 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
             }
         } else if (lives > 0) {
             // lost a life
+            Toast.makeText(this, "You lost a life! One chance remaining", Toast.LENGTH_SHORT).show()
             loseAnimation()
             buttons[index].setBackgroundColor(Color.RED)
             mHandler.postDelayed({
