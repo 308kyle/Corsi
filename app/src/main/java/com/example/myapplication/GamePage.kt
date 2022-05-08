@@ -289,9 +289,7 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         private const val TAG = "Corsi-Tapping"
         private const val TIMER_REFRESH: Long = 5000
         private const val TIMER_INTERVAL: Long = 100
-        private const val PREF_NAME: String = "my_pref"
-        private const val NAME: String = "name_key"
-
+        const val PREF_NAME: String = "my_pref"
+        const val NAME: String = "name_key"
     }
 }
-
