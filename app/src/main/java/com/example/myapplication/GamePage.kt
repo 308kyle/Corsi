@@ -3,6 +3,7 @@ package com.example.myapplication
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.graphics.Color.rgb
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
@@ -37,6 +38,9 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     private val mHandler: Handler = Handler(Looper.getMainLooper())
     protected lateinit var mSharedP: SharedPreferences
 
+    private val LRED = rgb(255, 204, 203)
+    private val LGRN = rgb(144, 238, 144)
+
     private lateinit var mConstraintLayout: ConstraintLayout
     private lateinit var mColors1: Array<ColorDrawable>
     private lateinit var mColors2: Array<ColorDrawable>
@@ -58,8 +62,8 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_game)
 
         mConstraintLayout = findViewById<ConstraintLayout>(R.id.constraintLayout)
-        mColors1 = arrayOf(ColorDrawable(Color.RED), ColorDrawable(Color.WHITE))
-        mColors2 = arrayOf(ColorDrawable(Color.GREEN), ColorDrawable(Color.WHITE))
+        mColors1 = arrayOf(ColorDrawable(LRED), ColorDrawable(Color.WHITE))
+        mColors2 = arrayOf(ColorDrawable(LGRN), ColorDrawable(Color.WHITE))
         mTransition1 = TransitionDrawable(mColors1)
         mTransition2 = TransitionDrawable(mColors2)
 
