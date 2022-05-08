@@ -11,7 +11,9 @@ class LoseScreen : AppCompatActivity() {
     lateinit var home: Button
     lateinit var round: TextView
     lateinit var highscore: TextView
+    lateinit var timeView: TextView
     protected lateinit var mSharedPreferences: SharedPreferences
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +26,11 @@ class LoseScreen : AppCompatActivity() {
 
         highscore = findViewById(R.id.highscore)
         get()
+
+        timeView = findViewById(R.id.timer)
+
+        var time: String? = bundle?.getString("timer")
+        timeView.text = time
 
         home = findViewById(R.id.button2)
         home.setOnClickListener{
