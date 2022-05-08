@@ -3,8 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Code/Corsi/app/src/main/res/layout/activity_game.xml" value="0.1" />
         <entry key="..\:/Code/Corsi/app/src/main/res/layout/activity_lose.xml" value="0.22" />
+        <entry key="..\:/Real corsi/Corsi/app/src/main/res/layout/activity_game.xml" value="0.33" />
+        <entry key="..\:/Real corsi/Corsi/app/src/main/res/layout/activity_lose.xml" value="0.33" />
+        <entry key="..\:/Real corsi/Corsi/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.173" />
         <entry key="app/src/main/res/layout/activity_game.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.4036458333333333" />
