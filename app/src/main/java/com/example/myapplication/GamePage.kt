@@ -3,15 +3,20 @@ package com.example.myapplication
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.graphics.Color.rgb
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
+import android.transition.Transition
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 
 import java.util.*
 import kotlin.concurrent.timerTask
@@ -23,15 +28,24 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     lateinit var time: TextView
     private val sequence: MutableList<Int> = ArrayList()
     private lateinit var buttons: List<Button>
-    var playerTurn: Boolean = false
-    private var running: Boolean = false
+    private var playerTurn: Boolean = false
     private var round: Int = 0
     private var count: Int = 0
-    private var lives: Int = 0
+    private var lives: Int = 1
+
     var duration: Long = 0
     var startTime:Long = 0
     private val mHandler: Handler = Handler(Looper.getMainLooper())
     protected lateinit var mSharedP: SharedPreferences
+
+    val LRED: Int = rgb(255, 204, 203)
+    val LGRN: Int = rgb(144, 238, 144)
+
+    private lateinit var mConstraintLayout: ConstraintLayout
+    private lateinit var mColors1: Array<ColorDrawable>
+    private lateinit var mColors2: Array<ColorDrawable>
+    private lateinit var mTransition1: TransitionDrawable
+    private lateinit var mTransition2: TransitionDrawable
 
     //updates the ingame timer
     private val timer = object: CountDownTimer(TIMER_REFRESH, TIMER_INTERVAL) {
@@ -46,6 +60,12 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
+
+        mConstraintLayout = findViewById<ConstraintLayout>(R.id.constraintLayout)
+        mColors1 = arrayOf(ColorDrawable(LRED), ColorDrawable(Color.WHITE))
+        mColors2 = arrayOf(ColorDrawable(LGRN), ColorDrawable(Color.WHITE))
+        mTransition1 = TransitionDrawable(mColors1)
+        mTransition2 = TransitionDrawable(mColors2)
 
         //init the round and time fields, should update them as the game goes, but idk
         //better figure out how to track time in kotlin
@@ -99,7 +119,7 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
 
         // locks the user out of clicking during the playback
-        if (!playerTurn || running) {
+        if (!playerTurn) {
             return
         }
         val index: Int = v!!.tag as Int
@@ -122,7 +142,6 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
                 lives = 1
                 sequence.add(randomNoDoubles())
                 playSequence()
-
             }
         } else if (lives > 0) {
             // lost a life
@@ -145,29 +164,30 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
 
     private fun playSequence() {
         Log.i(TAG, "new sequence")
-        running = true
+        playerTurn = false
         mHandler.postDelayed({
             playerTurn = true
-            running = false
         }, (800 * (sequence.size + 1)).toLong())
 
         for (i in 0 until sequence.size) {
             mHandler.postDelayed({
                 buttons[sequence[i]].setBackgroundColor(Color.YELLOW)
-            }, (800 * (i+1)).toLong())
+            }, (800 * (i + 1)).toLong())
 
             mHandler.postDelayed({
                 buttons[sequence[i]].setBackgroundColor(Color.BLUE)
-            }, (800 * (i+2)).toLong())
+            }, (800 * (i + 2)).toLong())
         }
         Log.i(TAG, playerTurn.toString())
     }
 
+    // random int 0-8
     private fun randomButton() : Int {
         val r = Random()
         return r.nextInt(buttons.size)
     }
 
+    // random int 0-8 excluding previously chosen int
     private fun randomNoDoubles() : Int {
         val r = Random()
         var rand = r.nextInt(buttons.size - 1)
@@ -177,6 +197,16 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
             rand++
         }
         return rand
+    }
+
+    private fun wAnimation() {
+        mConstraintLayout.background = mTransition2
+        mTransition2.startTransition(500)
+    }
+
+    private fun lAnimation() {
+        mConstraintLayout.background = mTransition1
+        mTransition1.startTransition(500)
     }
 
     private fun lose(){
