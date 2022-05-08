@@ -21,6 +21,5 @@ class MainActivity : AppCompatActivity() {
             //Toast.makeText(this,"test!",Toast.LENGTH_LONG).show()
 
         }
-
     }
 }

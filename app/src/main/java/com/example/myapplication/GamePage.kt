@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -11,8 +12,10 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+
 import java.util.*
 import kotlin.concurrent.timerTask
+
 
 class GamePage: AppCompatActivity(), View.OnClickListener {
 
@@ -21,16 +24,17 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     private val sequence: MutableList<Int> = ArrayList()
     private lateinit var buttons: List<Button>
     var playerTurn: Boolean = false
-    var running: Boolean = false
-    var round: Int = 0
-    var count: Int = 0
-    var lives: Int = 0
+    private var running: Boolean = false
+    private var round: Int = 0
+    private var count: Int = 0
+    private var lives: Int = 0
     var duration: Long = 0
     var startTime:Long = 0
     private val mHandler: Handler = Handler(Looper.getMainLooper())
+    protected lateinit var mSharedP: SharedPreferences
 
     //updates the ingame timer
-    val timer = object: CountDownTimer(TIMER_REFRESH, TIMER_INTERVAL) {
+    private val timer = object: CountDownTimer(TIMER_REFRESH, TIMER_INTERVAL) {
         override fun onTick(millisUntilFinished: Long) {
             duration = System.currentTimeMillis() - startTime
             time.setText(duration.toString())
@@ -60,10 +64,10 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
             findViewById(R.id.eight),
             findViewById(R.id.nine)
         )
+
         for (i in 0..8) {
             buttons[i].setOnClickListener(this)
             buttons[i].tag = i
-
         }
 
 //      all the on click listeners for the buttons are below (theres a lose function at the bottom)
@@ -89,6 +93,7 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         sequence.add(randomButton())
         playSequence()
         round++
+        rounds.text = round.toString()
     }
 
     override fun onClick(v: View?) {
@@ -112,6 +117,7 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
             if (count == round) {
                 // next round
                 round++
+                rounds.text = round.toString()
                 count = 0
                 lives = 1
                 sequence.add(randomNoDoubles())
@@ -157,8 +163,6 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         Log.i(TAG, playerTurn.toString())
     }
 
-
-
     private fun randomButton() : Int {
         val r = Random()
         return r.nextInt(buttons.size)
@@ -176,7 +180,9 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     }
 
     private fun lose(){
+        save()
         val intent = Intent(this,LoseScreen::class.java)
+        intent.putExtra("score", round)
         startActivity(intent)
     }
 
@@ -194,9 +200,28 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         //return out
     }
 
+    fun save() {
+        mSharedP = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
+        val savedScore = mSharedP.getInt(NAME, 0)
+        // save if the current score is the higher than the saved score
+        if (savedScore < round) {
+            val edit = mSharedP.edit()
+            edit.putInt(NAME, round)
+            edit.commit()
+        }
+    }
+
+//    fun get() {
+//        mSharedP = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
+//        name.text = sharedpreferences.getString(NAME, "")
+//    }
+
+
     companion object {
         private const val TAG = "Corsi-Tapping"
-        private val TIMER_REFRESH: Long = 5000
-        private val TIMER_INTERVAL: Long = 500
+        private const val TIMER_REFRESH: Long = 5000
+        private const val TIMER_INTERVAL: Long = 500
+        private const val PREF_NAME: String = "my_pref"
+        private const val NAME: String = "name_key"
     }
 }
