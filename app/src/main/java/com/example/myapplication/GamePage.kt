@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -11,8 +12,10 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+
 import java.util.*
 import kotlin.concurrent.timerTask
+
 
 class GamePage: AppCompatActivity(), View.OnClickListener {
 
@@ -21,15 +24,17 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     private val sequence: MutableList<Int> = ArrayList()
     private lateinit var buttons: List<Button>
     var playerTurn: Boolean = false
-    var running: Boolean = false
-    var round: Int = 0
-    var count: Int = 0
+    private var running: Boolean = false
+    private var round: Int = 0
+    private var count: Int = 0
+    private var lives: Int = 0
     var duration: Long = 0
     var startTime:Long = 0
-    val mHandler: Handler = Handler(Looper.getMainLooper())
+    private val mHandler: Handler = Handler(Looper.getMainLooper())
+    protected lateinit var mSharedP: SharedPreferences
 
     //updates the ingame timer
-    val timer = object: CountDownTimer(TIMER_REFRESH, TIMER_INTERVAL) {
+    private val timer = object: CountDownTimer(TIMER_REFRESH, TIMER_INTERVAL) {
         override fun onTick(millisUntilFinished: Long) {
             duration = System.currentTimeMillis() - startTime
             time.setText(timeConvert(duration))
@@ -59,10 +64,10 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
             findViewById(R.id.eight),
             findViewById(R.id.nine)
         )
+
         for (i in 0..8) {
             buttons[i].setOnClickListener(this)
             buttons[i].tag = i
-
         }
 
 //      all the on click listeners for the buttons are below (theres a lose function at the bottom)
@@ -84,8 +89,11 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         eventTimer.schedule(timerTask {
             timerStarter(timer)
         }, 0, TIMER_REFRESH)
+
+        sequence.add(randomButton())
         playSequence()
         round++
+        rounds.text = round.toString()
     }
 
     override fun onClick(v: View?) {
@@ -99,7 +107,6 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         Log.i(TAG, "count: $count round: $round")
         Log.i(TAG, "" + sequence[count] + " " + index)
 
-
         // correct
         if (sequence[count] == index) {
             buttons[index].setBackgroundColor(Color.YELLOW)
@@ -110,9 +117,22 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
             if (count == round) {
                 // next round
                 round++
+                rounds.text = round.toString()
                 count = 0
+                lives = 1
+                sequence.add(randomNoDoubles())
                 playSequence()
+
             }
+        } else if (lives > 0) {
+            // lost a life
+            buttons[index].setBackgroundColor(Color.RED)
+            mHandler.postDelayed({
+                buttons[index].setBackgroundColor(Color.BLUE)
+            }, 200)
+            count = 0
+            lives--
+            playSequence()
         } else {
             // game over
             // temp code
@@ -129,9 +149,7 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         mHandler.postDelayed({
             playerTurn = true
             running = false
-        }, (800 * (sequence.size + 2)).toLong())
-
-        sequence.add(randomButton())
+        }, (800 * (sequence.size + 1)).toLong())
 
         for (i in 0 until sequence.size) {
             mHandler.postDelayed({
@@ -150,13 +168,26 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         return r.nextInt(buttons.size)
     }
 
+    private fun randomNoDoubles() : Int {
+        val r = Random()
+        var rand = r.nextInt(buttons.size - 1)
+        if (sequence[sequence.size - 1] > rand) {
+            return rand
+        } else {
+            rand++
+        }
+        return rand
+    }
+
     private fun lose(){
+        save()
         val intent = Intent(this,LoseScreen::class.java)
+        intent.putExtra("score", round)
         startActivity(intent)
     }
 
     //corrects inaccuracies in the duration variable and starts the timer
-    fun timerStarter(t: CountDownTimer){
+    private fun timerStarter(t: CountDownTimer){
         //duration = System.currentTimeMillis() - startTime
         t.cancel()
         t.start()
@@ -191,9 +222,30 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
             return "$t"
         }
     }
+    
+    fun save() {
+        mSharedP = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
+        val savedScore = mSharedP.getInt(NAME, 0)
+        // save if the current score is the higher than the saved score
+        if (savedScore < round) {
+            val edit = mSharedP.edit()
+            edit.putInt(NAME, round)
+            edit.commit()
+        }
+    }
+
+//    fun get() {
+//        mSharedP = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
+//        name.text = sharedpreferences.getString(NAME, "")
+//    }
+
+
     companion object {
         private const val TAG = "Corsi-Tapping"
-        private val TIMER_REFRESH: Long = 5000
-        private val TIMER_INTERVAL: Long = 100
+        private const val TIMER_REFRESH: Long = 5000
+        private const val TIMER_INTERVAL: Long = 100
+        private const val PREF_NAME: String = "my_pref"
+        private const val NAME: String = "name_key"
+
     }
 }
