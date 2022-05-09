@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.Color.rgb
+import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.TransitionDrawable
@@ -11,25 +12,22 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
-import android.provider.CalendarContract
-import android.transition.Transition
 import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-
+import androidx.core.view.updateLayoutParams
 import java.util.*
 import kotlin.concurrent.timerTask
 
-
 class GamePage: AppCompatActivity(), View.OnClickListener {
 
-    lateinit var rounds: TextView
+    private lateinit var rounds: TextView
     lateinit var time: TextView
+
     private val sequence: MutableList<Int> = ArrayList()
     private lateinit var buttons: List<Button>
     private var playerTurn: Boolean = false
@@ -46,8 +44,9 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     private val LGRN = rgb(144, 238, 144)
 
     private lateinit var mConstraintLayout: ConstraintLayout
-    private lateinit var mColors1: Array<ColorDrawable>
-    private lateinit var mColors2: Array<ColorDrawable>
+    private var mDisplayWidth: Int = 0
+    private var mDisplayHeight: Int = 0
+    private var size: Int = 0
     private lateinit var mTransition1: TransitionDrawable
     private lateinit var mTransition2: TransitionDrawable
 
@@ -68,6 +67,7 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_game)
 
         mConstraintLayout = findViewById<ConstraintLayout>(R.id.constraintLayout)
+
         mColors1 = arrayOf(ColorDrawable(LRED), ColorDrawable(Color.parseColor("#97cfff")))
         mColors2 = arrayOf(ColorDrawable(LGRN), ColorDrawable(Color.parseColor("#97cfff")))
         mTransition1 = TransitionDrawable(mColors1)
@@ -95,6 +95,21 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
             buttons[i].setOnClickListener(this)
             buttons[i].tag = i
         }
+
+        //val displayMetrics = DisplayMetrics()
+//        mDisplayWidth = mConstraintLayout.width
+//        mDisplayHeight = mConstraintLayout.height
+        mDisplayWidth = resources.displayMetrics.widthPixels
+        mDisplayHeight = resources.displayMetrics.heightPixels
+
+
+        size = buttons[0].width
+        val density = resources.displayMetrics.density
+        mConstraintLayout.apply {
+            //mConstraintLayout.
+        }
+
+        launchNewAttempt()
 
 //      all the on click listeners for the buttons are below (theres a lose function at the bottom)
 //      in case it isnt obvious these listeners refer to these buttons
@@ -210,6 +225,62 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         return rand
     }
 
+//    private fun placeButtons() {
+//        val r = Random()
+//
+//        for (button in buttons) {
+//            val lp = button.layoutParams as ConstraintLayout
+//            val left = (r.nextFloat() * (mDisplayWidth - size)).toInt()
+//            val top = (r.nextFloat() * (mDisplayHeight - size)).toInt()
+//            //layoutParams.width = left
+//            //layoutParams.height = top
+//            //button.layoutpara
+//
+//            button.updateLayoutParams {
+//                this.width = left
+//                this.height = top
+//            }
+//        }
+//    }
+
+    private fun launchNewAttempt() {
+
+        val r = Random()
+
+        var list = ArrayList<Pair<Float, Float>>()
+        for (btn in buttons) {
+            var good: Boolean = false
+            var left: Float = 0.toFloat()
+            var top: Float = 0.toFloat()
+            while (!good) {
+                left = (r.nextFloat() * (mDisplayWidth - (2*btn.width)))
+                top = (r.nextFloat() * (mDisplayHeight - (2*btn.height)))
+                good = true
+                for (b in list) {
+                    if (overlap(Pair(b.first, b.second), Pair(btn.x, btn.y))) {
+                        good = false
+                    }
+                }
+            }
+            Log.i(TAG, "$left, $top")
+            btn.translationX = left
+            btn.translationY = top
+            list.add(Pair(btn.x, btn.y))
+        }
+        Log.i(TAG, "done")
+
+    }
+
+    // first is x, second is y
+    private fun overlap(p1: Pair<Float, Float>, p2: Pair<Float, Float>): Boolean {
+        val ret = (p2.first + size > p1.second &&
+                p2.second + size > p1.second &&
+                p1.first + size > p2.first &&
+                p1.second + size > p2.second)
+        Log.i(TAG, "OVERLAP $ret")
+        return ret
+    }
+
     private fun wAnimation() {
         mConstraintLayout.background = mTransition2
         mTransition2.startTransition(500)
@@ -286,11 +357,6 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         mConstraintLayout.background = mTransition2
         mTransition2.startTransition(500)
     }
-
-//    fun get() {
-//        mSharedP = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
-//        name.text = mSharedP.getString(NAME, "")
-//    }
 
     companion object {
         private const val TAG = "Corsi-Tapping"
