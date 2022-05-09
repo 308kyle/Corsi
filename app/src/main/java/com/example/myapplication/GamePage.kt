@@ -47,6 +47,8 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     private var mDisplayWidth: Int = 0
     private var mDisplayHeight: Int = 0
     private var size: Int = 0
+    private lateinit var mColors1: Array<ColorDrawable>
+    private lateinit var mColors2: Array<ColorDrawable>
     private lateinit var mTransition1: TransitionDrawable
     private lateinit var mTransition2: TransitionDrawable
 
