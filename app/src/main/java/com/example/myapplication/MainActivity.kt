@@ -20,11 +20,6 @@ class MainActivity : AppCompatActivity() {
         supportActionBar!!.hide()
         setContentView(R.layout.activity_main)
 
-        /*var background = findViewById<ConstraintLayout>(R.id.MainActivityLayout).background
-        animation = background as AnimationDrawable
-        animation.setEnterFadeDuration(2000)
-        animation.setExitFadeDuration(2000)
-        animation.start()*/
         play = findViewById(R.id.button)
         play.setOnClickListener{
             val intent = Intent(this,GamePage::class.java)
