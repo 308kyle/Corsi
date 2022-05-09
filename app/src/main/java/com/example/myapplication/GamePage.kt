@@ -14,6 +14,7 @@ import android.provider.CalendarContract
 import android.transition.Transition
 import android.util.Log
 import android.view.View
+import android.view.Window
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -61,6 +62,8 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        supportActionBar!!.hide()
         setContentView(R.layout.activity_game)
 
         mConstraintLayout = findViewById<ConstraintLayout>(R.id.constraintLayout)
