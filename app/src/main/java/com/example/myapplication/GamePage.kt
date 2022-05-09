@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.Color.rgb
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -67,8 +68,8 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_game)
 
         mConstraintLayout = findViewById<ConstraintLayout>(R.id.constraintLayout)
-        mColors1 = arrayOf(ColorDrawable(LRED), ColorDrawable(Color.WHITE))
-        mColors2 = arrayOf(ColorDrawable(LGRN), ColorDrawable(Color.WHITE))
+        mColors1 = arrayOf(ColorDrawable(LRED), ColorDrawable(Color.parseColor("#97cfff")))
+        mColors2 = arrayOf(ColorDrawable(LGRN), ColorDrawable(Color.parseColor("#97cfff")))
         mTransition1 = TransitionDrawable(mColors1)
         mTransition2 = TransitionDrawable(mColors2)
 
