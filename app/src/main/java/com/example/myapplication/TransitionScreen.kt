@@ -20,11 +20,18 @@ class TransitionScreen : AppCompatActivity()  {
         next = findViewById(R.id.next)
         //change this to be the
         roundxnum = findViewById(R.id.roundxnum)
+        var bundle: Bundle? = getIntent().getExtras()
+        var duration: Long? = bundle?.getLong("1")
+        var round: Int? = bundle?.getInt("2")
 
+        roundxnum.setText("Round $round Cleared")
         next.setOnClickListener{
             val intent = Intent(this,GamePage::class.java)
             //add a bunch of intents extras to go back to game screen and have it functional
+            intent.putExtra("1",duration)
+            intent.putExtra("2",round)
             startActivity(intent)
+            finish()
         }
 
     }
