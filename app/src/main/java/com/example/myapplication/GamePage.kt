@@ -68,6 +68,7 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         supportActionBar!!.hide()
         setContentView(R.layout.activity_game)
 
+
         mConstraintLayout = findViewById<ConstraintLayout>(R.id.constraintLayout)
 
         mColors1 = arrayOf(ColorDrawable(LRED), ColorDrawable(Color.parseColor("#97cfff")))
@@ -127,18 +128,31 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
 
         // maybe add button to start game?
         // starting game
+
         startTime = System.currentTimeMillis()
         var eventTimer = Timer()
         eventTimer.schedule(timerTask {
             timerStarter(timer)
         }, 0, TIMER_REFRESH)
-
-        sequence.add(randomButton())
-        mHandler.postDelayed({
-            playSequence()
+        var bundle: Bundle? = getIntent().getExtras()
+        if(bundle != null){
+            startTime = bundle?.getLong("1")
+            round = bundle?.getInt("2")
             round++
-            rounds.text = round.toString()
-        }, 1000)
+            sequence.add(randomButton())
+            for(i in 1 until round){
+                sequence.add(randomNoDoubles())
+                rounds.text = round.toString()
+            }
+            playSequence()
+        }else {
+            sequence.add(randomButton())
+            mHandler.postDelayed({
+                playSequence()
+                round++
+                rounds.text = round.toString()
+            }, 1000)
+        }
     }
 
     override fun onClick(v: View?) {
@@ -161,12 +175,10 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
             if (count == round) {
                 // next round
                 winAnimation()
-                round++
-                rounds.text = round.toString()
                 count = 0
                 lives = 1
                 sequence.add(randomNoDoubles())
-                playSequence()
+                nextRound()
             }
         } else if (lives > 0) {
             // lost a life
@@ -188,7 +200,12 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         }
         Log.i(TAG, playerTurn.toString())
     }
-
+    private fun nextRound(){
+        val intent = Intent(this,TransitionScreen::class.java)
+        intent.putExtra("1",startTime)
+        intent.putExtra("2",round)
+        startActivity(intent)
+    }
     private fun playSequence() {
         Log.i(TAG, "new sequence")
 
@@ -267,15 +284,6 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
 
 
 
-    private fun wAnimation() {
-        mConstraintLayout.background = mTransition2
-        mTransition2.startTransition(500)
-    }
-
-    private fun lAnimation() {
-        mConstraintLayout.background = mTransition1
-        mTransition1.startTransition(500)
-    }
 
     private fun lose(){
         timer.cancel()
