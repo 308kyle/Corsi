@@ -11,7 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 
 class MainActivity : AppCompatActivity() {
     private lateinit var play: Button
-    private lateinit var animation:AnimationDrawable
+    //private lateinit var animation:AnimationDrawable
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,11 +20,11 @@ class MainActivity : AppCompatActivity() {
         supportActionBar!!.hide()
         setContentView(R.layout.activity_main)
 
-        var background = findViewById<ConstraintLayout>(R.id.MainActivityLayout).background
+        /*var background = findViewById<ConstraintLayout>(R.id.MainActivityLayout).background
         animation = background as AnimationDrawable
         animation.setEnterFadeDuration(2000)
         animation.setExitFadeDuration(2000)
-        animation.start()
+        animation.start()*/
         play = findViewById(R.id.button)
         play.setOnClickListener{
             val intent = Intent(this,GamePage::class.java)
