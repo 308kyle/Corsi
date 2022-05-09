@@ -10,8 +10,8 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 
 class MainActivity : AppCompatActivity() {
-    lateinit var play: Button
-    lateinit var animation:AnimationDrawable
+    private lateinit var play: Button
+    private lateinit var animation:AnimationDrawable
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

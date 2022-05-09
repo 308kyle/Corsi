@@ -226,7 +226,7 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         intent.putExtra("score", round)
         intent.putExtra("timer", timeConvert(duration))
         startActivity(intent)
-
+        finish()
     }
 
     //corrects inaccuracies in the duration variable and starts the timer
