@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.Color.rgb
+import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
@@ -92,8 +93,12 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         }
 
         //val displayMetrics = DisplayMetrics()
-        mDisplayWidth = mConstraintLayout.width
-        mDisplayHeight = mConstraintLayout.height
+//        mDisplayWidth = mConstraintLayout.width
+//        mDisplayHeight = mConstraintLayout.height
+        mDisplayWidth = resources.displayMetrics.widthPixels
+        mDisplayHeight = resources.displayMetrics.heightPixels
+
+
         size = buttons[0].width
         val density = resources.displayMetrics.density
         mConstraintLayout.apply {
@@ -237,16 +242,39 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     private fun launchNewAttempt() {
 
         val r = Random()
+
+        var list = ArrayList<Pair<Float, Float>>()
         for (btn in buttons) {
-            val left = (r.nextFloat() * (mDisplayWidth - size)) as Int
-            val top = (r.nextFloat() * (mDisplayHeight - size)) as Int
-            val layoutParams = (btn.getLayoutParams()) as ConstraintLayout.LayoutParams
-            layoutParams.width = size
-            layoutParams.height = size
-            layoutParams.leftMargin = left
-            layoutParams.topMargin = top
-            btn.setLayoutParams(layoutParams)
+            var good: Boolean = false
+            var left: Float = 0.toFloat()
+            var top: Float = 0.toFloat()
+            while (!good) {
+                left = (r.nextFloat() * (mDisplayWidth - (2*btn.width)))
+                top = (r.nextFloat() * (mDisplayHeight - (2*btn.height)))
+                good = true
+                for (b in list) {
+                    if (overlap(Pair(b.first, b.second), Pair(btn.x, btn.y))) {
+                        good = false
+                    }
+                }
+            }
+            Log.i(TAG, "$left, $top")
+            btn.translationX = left
+            btn.translationY = top
+            list.add(Pair(btn.x, btn.y))
         }
+        Log.i(TAG, "done")
+
+    }
+
+    // first is x, second is y
+    private fun overlap(p1: Pair<Float, Float>, p2: Pair<Float, Float>): Boolean {
+        val ret = (p2.first + size > p1.second &&
+                p2.second + size > p1.second &&
+                p1.first + size > p2.first &&
+                p1.second + size > p2.second)
+        Log.i(TAG, "OVERLAP $ret")
+        return ret
     }
 
     private fun wAnimation() {
