@@ -10,24 +10,21 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
-import android.provider.CalendarContract
-import android.transition.Transition
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-
+import androidx.core.view.updateLayoutParams
 import java.util.*
 import kotlin.concurrent.timerTask
 
-
 class GamePage: AppCompatActivity(), View.OnClickListener {
 
-    lateinit var rounds: TextView
+    private lateinit var rounds: TextView
     lateinit var time: TextView
+
     private val sequence: MutableList<Int> = ArrayList()
     private lateinit var buttons: List<Button>
     private var playerTurn: Boolean = false
@@ -44,8 +41,9 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
     private val LGRN = rgb(144, 238, 144)
 
     private lateinit var mConstraintLayout: ConstraintLayout
-    private lateinit var mColors1: Array<ColorDrawable>
-    private lateinit var mColors2: Array<ColorDrawable>
+    private var mDisplayWidth: Int = 0
+    private var mDisplayHeight: Int = 0
+    private var size: Int = 0
     private lateinit var mTransition1: TransitionDrawable
     private lateinit var mTransition2: TransitionDrawable
 
@@ -64,8 +62,9 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_game)
 
         mConstraintLayout = findViewById<ConstraintLayout>(R.id.constraintLayout)
-        mColors1 = arrayOf(ColorDrawable(LRED), ColorDrawable(Color.WHITE))
-        mColors2 = arrayOf(ColorDrawable(LGRN), ColorDrawable(Color.WHITE))
+
+        val mColors1 = arrayOf(ColorDrawable(LRED), ColorDrawable(Color.WHITE))
+        val mColors2 = arrayOf(ColorDrawable(LGRN), ColorDrawable(Color.WHITE))
         mTransition1 = TransitionDrawable(mColors1)
         mTransition2 = TransitionDrawable(mColors2)
 
@@ -91,6 +90,17 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
             buttons[i].setOnClickListener(this)
             buttons[i].tag = i
         }
+
+        //val displayMetrics = DisplayMetrics()
+        mDisplayWidth = mConstraintLayout.width
+        mDisplayHeight = mConstraintLayout.height
+        size = buttons[0].width
+        val density = resources.displayMetrics.density
+        mConstraintLayout.apply {
+            //mConstraintLayout.
+        }
+
+        launchNewAttempt()
 
 //      all the on click listeners for the buttons are below (theres a lose function at the bottom)
 //      in case it isnt obvious these listeners refer to these buttons
@@ -206,6 +216,39 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         return rand
     }
 
+//    private fun placeButtons() {
+//        val r = Random()
+//
+//        for (button in buttons) {
+//            val lp = button.layoutParams as ConstraintLayout
+//            val left = (r.nextFloat() * (mDisplayWidth - size)).toInt()
+//            val top = (r.nextFloat() * (mDisplayHeight - size)).toInt()
+//            //layoutParams.width = left
+//            //layoutParams.height = top
+//            //button.layoutpara
+//
+//            button.updateLayoutParams {
+//                this.width = left
+//                this.height = top
+//            }
+//        }
+//    }
+
+    private fun launchNewAttempt() {
+
+        val r = Random()
+        for (btn in buttons) {
+            val left = (r.nextFloat() * (mDisplayWidth - size)) as Int
+            val top = (r.nextFloat() * (mDisplayHeight - size)) as Int
+            val layoutParams = (btn.getLayoutParams()) as ConstraintLayout.LayoutParams
+            layoutParams.width = size
+            layoutParams.height = size
+            layoutParams.leftMargin = left
+            layoutParams.topMargin = top
+            btn.setLayoutParams(layoutParams)
+        }
+    }
+
     private fun wAnimation() {
         mConstraintLayout.background = mTransition2
         mTransition2.startTransition(500)
@@ -282,11 +325,6 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         mConstraintLayout.background = mTransition2
         mTransition2.startTransition(500)
     }
-
-//    fun get() {
-//        mSharedP = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
-//        name.text = mSharedP.getString(NAME, "")
-//    }
 
     companion object {
         private const val TAG = "Corsi-Tapping"
