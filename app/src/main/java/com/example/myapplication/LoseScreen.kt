@@ -3,6 +3,7 @@ package com.example.myapplication
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.Window
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +18,8 @@ class LoseScreen : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        supportActionBar!!.hide()
         setContentView(R.layout.activity_lose)
 
         round = findViewById(R.id.endround)
@@ -36,6 +39,7 @@ class LoseScreen : AppCompatActivity() {
         home.setOnClickListener{
             val intent = Intent(this,MainActivity::class.java)
             startActivity(intent)
+            finish()
         }
     }
 

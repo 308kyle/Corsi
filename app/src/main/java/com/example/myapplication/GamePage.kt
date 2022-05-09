@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Color.rgb
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -13,6 +14,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.Window
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -60,12 +62,14 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        supportActionBar!!.hide()
         setContentView(R.layout.activity_game)
 
         mConstraintLayout = findViewById<ConstraintLayout>(R.id.constraintLayout)
 
-        val mColors1 = arrayOf(ColorDrawable(LRED), ColorDrawable(Color.WHITE))
-        val mColors2 = arrayOf(ColorDrawable(LGRN), ColorDrawable(Color.WHITE))
+        mColors1 = arrayOf(ColorDrawable(LRED), ColorDrawable(Color.parseColor("#97cfff")))
+        mColors2 = arrayOf(ColorDrawable(LGRN), ColorDrawable(Color.parseColor("#97cfff")))
         mTransition1 = TransitionDrawable(mColors1)
         mTransition2 = TransitionDrawable(mColors2)
 
@@ -294,7 +298,7 @@ class GamePage: AppCompatActivity(), View.OnClickListener {
         intent.putExtra("score", round)
         intent.putExtra("timer", timeConvert(duration))
         startActivity(intent)
-
+        finish()
     }
 
     //corrects inaccuracies in the duration variable and starts the timer

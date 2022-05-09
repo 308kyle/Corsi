@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@drawable/background_1"
+    android:id="@+id/MainActivityLayout">
 
     <TextView
         android:id="@+id/textView"
@@ -12,16 +14,19 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="140dp"
         android:text="Welcome to Corsi-Block Tapping"
+        android:textSize="26sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView3"
-        android:layout_width="279dp"
-        android:layout_height="119dp"
+        android:layout_width="308dp"
+        android:layout_height="169dp"
         android:layout_marginTop="68dp"
-        android:text="Press the buttons in the order they flash yellow. Every round adds one extra block to memeorize. If you make a mistake, you are able to redo the current round one time."
+        android:text="Press the buttons in the order they flash yellow. Every round adds one extra block to memorize. If you make a mistake, you are able to redo the current round one time."
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
